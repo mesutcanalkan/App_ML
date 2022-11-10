@@ -12,7 +12,8 @@ property_id = st.sidebar.text_input('Rightmove Property ID', '126302255')
 
 st.sidebar.write("Disclaimer: This non-profit web-app is for illustrative purposes, only. The code may produce errors for some property IDs as it's not been fully tested.")
 
-page_model = page_model_scraper(property_id=property_id)
+rightmove_url = f"https://www.rightmove.co.uk/properties/{property_id}/#/"
+page_model = page_model_scraper(rightmove_url=rightmove_url, keyword_to_look='window.PAGE_MODEL = ')
 
 primaryPrice = page_model['propertyData']['prices']['primaryPrice']
 

@@ -45,15 +45,13 @@ text-align: center;
 </div>
 """
 
-def page_model_scraper(property_id: str):
+def page_model_scraper(rightmove_url: str, keyword_to_look: str):
 
-    page = requests.get(f"https://www.rightmove.co.uk/properties/{property_id}/#/")
+    page = requests.get(rightmove_url)
 
     soup = BeautifulSoup(page.content, 'html.parser')
 
     all_scripts = soup.find_all('script')
-
-    keyword_to_look = 'window.PAGE_MODEL = '
 
     page_model = json.loads(all_scripts[
         
