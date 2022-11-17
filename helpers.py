@@ -91,7 +91,12 @@ def open_floorplan_url(floorplan_url: str):
 
 def transform_floorplan_image(img: np.ndarray):
 
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    try:
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    # Invalid number of channels in input image
+    # Maybe it is already grayscale (1 channel) and we are trying to convert it from BGR (3 channel) to grayscale.
+    except:
+        gray = img[:]
     blur = cv2.GaussianBlur(gray, (3,3), 0)
     thresh = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
 
@@ -107,8 +112,10 @@ def pytesseract_image(transformed_image: np.ndarray):
     
     df_img = df_img[ ~ df_img['left'].isnull()]
     # dropping whitespace characters like
-    # [',' '.' '/' '~' '"' "'" ':' '°' '-' '|' '=' '%' '”']
-    df_img = df_img[ ~ df_img['char'].str.contains(r'[^\w\s]')].reset_index(drop=True)
+    # [',' '.' '/' '~' '"' "'" ':' '°' '-' '|' '%' '”'] except for '='
+    # https://media.rightmove.co.uk/57k/56751/128300390/56751_1218593_FLP_00_0000.png
+    # because sometimes it says Floor Area = X sqf
+    df_img = df_img[ ~ df_img['char'].str.contains(r'[^\w=\s]')].reset_index(drop=True)
     df_img[['left', 'top', 'width', 'height']] = df_img[['left', 'top', 'width', 'height']].astype(int)
     
     return df_img
